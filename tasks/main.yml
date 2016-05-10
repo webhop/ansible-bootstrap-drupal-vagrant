@@ -1,0 +1,111 @@
+---
+
+- name: Install pip
+  apt:
+    name: python-pip
+
+- name: Install MySQL-python
+  pip:
+    name: MySQL-python
+
+- name: Create a MySQL database for Drupal.
+  mysql_db:
+    db: "{{ drupal_mysql_database }}"
+    state: present
+
+- name: Create a MySQL user for Drupal.
+  mysql_user:
+    name: "{{ drupal_mysql_user }}"
+    host: "{{ item }}"
+    priv: "{{ drupal_mysql_database }}.*:ALL"
+    password: "{{ drupal_mysql_password }}"
+  with_items:
+    - 127.0.0.1
+    - ::1
+    - localhost
+
+- name: Check for existence of Drupal database
+  command: '/usr/bin/mysql -N -s -u {{ drupal_mysql_user }} -p{{ drupal_mysql_password }} -e "SELECT COUNT(1) FROM information_schema.tables WHERE table_schema=''drupal'';"'
+  register: drupal_table_count
+
+- name: Copy database settings in for vagrant image
+  template:
+    src: local_settings.php.j2
+    dest: "{{ doc_root }}/sites/default/local_settings.php"
+    owner: www-data
+    group: www-data
+    mode: 0644
+
+- name: Check if Drupal can be bootstrapped
+  command: /usr/local/bin/drush status-report
+  args:
+    chdir: "{{ doc_root }}"
+  ignore_errors: yes
+  no_log: true
+  register: drupal_bootstrapped
+
+- name: Download latest DB backup
+  get_url:
+    url: "{{ database_backup_url }}"
+    dest: /tmp/mysql_backup.zip
+    validate_certs: no
+  when: drupal_table_count.stdout|int ==  0 and restore_db_backup
+
+- name: Extract the backup
+  unarchive:
+    src: /tmp/mysql_backup.zip
+    dest: /tmp
+    copy: no
+  when: drupal_table_count.stdout|int ==  0 and restore_db_backup
+
+- name: Import the backup
+  mysql_db:
+    state: import
+    name: "{{ drupal_mysql_database }}"
+    target: /tmp/{{ database_backup_name }}.sql
+  when: drupal_table_count.stdout|int ==  0 and restore_db_backup
+
+- name: Run Drupal site-install
+  command: /usr/local/bin/drush site-install minimal --site-name="{{ drupal_site_name }}" -y
+  args:
+    chdir: "{{ doc_root }}"
+  when: drupal_bootstrapped.rc != 0 and restore_db_backup is not defined
+  tags: install
+
+- name: Update Drupal schema
+  command: /usr/local/bin/drush updatedb -y
+  args:
+    chdir: "{{ doc_root }}"
+  when: drupal_bootstrapped.rc ==  0
+  tags: update
+
+- name: Check if Drupal Features are enabled
+  command: '/usr/bin/mysql -N -s -u {{ drupal_mysql_user }} -p{{ drupal_mysql_password }} -e "SELECT 1 FROM system WHERE name = ''features'' AND status = 1;" {{ drupal_mysql_database }}'
+  when: drupal_bootstrapped.rc ==  0
+  tags: update
+  register: drupal_enabled_features
+
+- name: Revert Drupal Features
+  command: /usr/local/bin/drush features-revert-all -y
+  args:
+    chdir: "{{ doc_root }}"
+  when: drupal_bootstrapped.rc ==  0 and drupal_enabled_features.stdout|int ==  1
+  tags: update
+
+- name: Clear the drupal cache
+  command: /usr/local/bin/drush cache-clear all
+  args:
+    chdir: "{{ doc_root }}"
+  when: drupal_bootstrapped.rc ==  0
+
+- name: Check if Drupal Set Environment is enabled
+  command: '/usr/bin/mysql -N -s -u {{ drupal_mysql_user }} -p{{ drupal_mysql_password }} -e "SELECT 1 FROM system WHERE name = ''set_environment'' AND status = 1;" {{ drupal_mysql_database }}'
+  when: drupal_bootstrapped.rc ==  0
+  tags: update 
+  register: drupal_enabled_set_env
+
+- name: Set the drupal environment
+  command: /usr/local/bin/drush set-environment --force
+  args:
+    chdir: "{{ doc_root }}"
+  when: drupal_bootstrapped.rc ==  0 and drupal_enabled_set_env.stdout|int ==  1

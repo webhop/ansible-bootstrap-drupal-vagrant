@@ -1,0 +1,7 @@
+---
+drupal_mysql_user: drupal
+drupal_mysql_password: drupal
+drupal_mysql_database: drupal
+doc_root: /var/www
+memcache_key_prefix: drupalvagrant
+restore_db_backup: false
