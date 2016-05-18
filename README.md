@@ -19,6 +19,7 @@ Requires a working python 2.7 installation in the base vagrant box being used
 - `doc_root` -  Full path to the website file dir. (**/var/www**)
 - `memcache_key_prefix` - Memcache key prefix to use. (**drupalvagrant**)
 - `restore_db_backup` - Restore from DB backup URL. (**false**)
+- `drupal_install_profile` - The installation profile to use. (**minimal**)
 
 
 ##### Variables

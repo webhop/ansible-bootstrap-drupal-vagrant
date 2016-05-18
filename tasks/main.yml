@@ -66,10 +66,10 @@
   when: drupal_table_count.stdout|int ==  0 and restore_db_backup
 
 - name: Run Drupal site-install
-  command: /usr/local/bin/drush site-install minimal --site-name="{{ drupal_site_name }}" -y
+  command: "/usr/local/bin/drush site-install {{ drupal_install_profile }} --site-name={{ drupal_site_name }} -y"
   args:
     chdir: "{{ doc_root }}"
-  when: drupal_bootstrapped.rc != 0 and restore_db_backup is not defined
+  when: drupal_bootstrapped.rc != 0 and not restore_db_backup
   tags: install
 
 - name: Update Drupal schema
@@ -101,7 +101,7 @@
 - name: Check if Drupal Set Environment is enabled
   command: '/usr/bin/mysql -N -s -u {{ drupal_mysql_user }} -p{{ drupal_mysql_password }} -e "SELECT 1 FROM system WHERE name = ''set_environment'' AND status = 1;" {{ drupal_mysql_database }}'
   when: drupal_bootstrapped.rc ==  0
-  tags: update 
+  tags: update
   register: drupal_enabled_set_env
 
 - name: Set the drupal environment

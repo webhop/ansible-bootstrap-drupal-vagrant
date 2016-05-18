@@ -5,3 +5,4 @@ drupal_mysql_database: drupal
 doc_root: /var/www
 memcache_key_prefix: drupalvagrant
 restore_db_backup: false
+drupal_install_profile: minimal
