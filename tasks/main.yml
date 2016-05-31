@@ -53,9 +53,8 @@
   register: drupal_bootstrapped
 
 - name: Retrieve DB backup from s3
-  local_action: s3
-  sudo: yes
-  args:
+  delegate_to: localhost
+  s3:
     region: "{{ region }}"
     mode: get
     bucket: "{{ s3_bucket }}"
@@ -75,9 +74,8 @@
   when: restore_db_backup
 
 - name: Retrieve files backup from s3
-  local_action: s3
-  sudo: yes
-  args:
+  delegate_to: localhost
+  s3:
     region: "{{ region }}"
     mode: get
     bucket: "{{ s3_bucket }}"
