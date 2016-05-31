@@ -4,9 +4,12 @@
   apt:
     name: python-pip
 
-- name: Install MySQL-python
+- name: Install packages
   pip:
-    name: MySQL-python
+    name: "{{ item }}"
+  with_items:
+    - MySQL-python
+    - bottle
 
 - name: Create a MySQL database for Drupal.
   mysql_db:
