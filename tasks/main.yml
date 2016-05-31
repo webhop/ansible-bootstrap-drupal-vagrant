@@ -54,6 +54,7 @@
 
 - name: Retrieve DB backup from s3
   local_action: s3
+  args:
     region: "{{ region }}"
     mode: get
     bucket: "{{ s3_bucket }}"
@@ -74,6 +75,7 @@
 
 - name: Retrieve files backup from s3
   local_action: s3
+  args:
     region: "{{ region }}"
     mode: get
     bucket: "{{ s3_bucket }}"
