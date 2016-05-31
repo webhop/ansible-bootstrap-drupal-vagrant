@@ -9,7 +9,7 @@
     name: "{{ item }}"
   with_items:
     - MySQL-python
-    - bottle
+    - boto
 
 - name: Create a MySQL database for Drupal.
   mysql_db:
