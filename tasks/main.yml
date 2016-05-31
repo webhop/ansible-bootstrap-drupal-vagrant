@@ -54,6 +54,7 @@
 
 - name: Retrieve DB backup from s3
   local_action: s3
+  sudo: yes
   args:
     region: "{{ region }}"
     mode: get
@@ -75,6 +76,7 @@
 
 - name: Retrieve files backup from s3
   local_action: s3
+  sudo: yes
   args:
     region: "{{ region }}"
     mode: get
