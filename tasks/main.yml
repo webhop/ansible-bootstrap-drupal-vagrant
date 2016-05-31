@@ -52,26 +52,39 @@
   no_log: true
   register: drupal_bootstrapped
 
-- name: Download latest DB backup
-  get_url:
-    url: "{{ database_backup_url }}"
-    dest: /tmp/mysql_backup.zip
-    validate_certs: no
-  when: drupal_table_count.stdout|int ==  0 and restore_db_backup
+- name: Retrieve DB backup from s3
+  s3:
+    region: "{{ region }}"
+    mode: get
+    bucket: "{{ s3_bucket }}"
+    object: "{{ database_backup_name }}"
+    dest: "/tmp/{{ database_backup_name }}"
+  when: restore_db_backup
 
-- name: Extract the backup
-  unarchive:
-    src: /tmp/mysql_backup.zip
-    dest: /tmp
-    copy: no
-  when: drupal_table_count.stdout|int ==  0 and restore_db_backup
-
-- name: Import the backup
+- name: Import the DB backup
   mysql_db:
     state: import
     name: "{{ drupal_mysql_database }}"
-    target: /tmp/{{ database_backup_name }}.sql
-  when: drupal_table_count.stdout|int ==  0 and restore_db_backup
+    target: "/tmp/{{ database_backup_name }}"
+  when: restore_db_backup
+
+- name: Retrieve files backup from s3
+  s3:
+    region: "{{ region }}"
+    mode: get
+    bucket: "{{ s3_bucket }}"
+    object: "{{ files_backup_name }}"
+    dest: "/tmp/{{ files_backup_name }}"
+  when: restore_files_backup
+
+- name: Extract the files backup
+  sudo: yes
+  unarchive:
+    src: "/tmp/{{ files_backup_name }}"
+    dest: "{{ doc_root }}/sites/default/files"
+    owner: www-data
+    group: www-data
+  when: restore_files_backup
 
 - name: Run Drupal site-install
   command: "/usr/local/bin/drush site-install {{ drupal_install_profile }} --site-name={{ drupal_site_name }} -y"
