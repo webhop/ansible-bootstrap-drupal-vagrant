@@ -1,11 +1,13 @@
 <?php
 
-$conf['cache_backends'][] = 'sites/all/modules/contrib/memcache/memcache.inc';
-$conf['cache_default_class'] = 'MemCacheDrupal';
-$conf['cache_class_cache_form'] = 'DrupalDatabaseCache';
+if (file_exists('./sites/all/modules/contrib/memcache/memcache.inc')) {
+  $conf['cache_backends'][] = './sites/all/modules/contrib/memcache/memcache.inc';
+  $conf['cache_default_class'] = 'MemCacheDrupal';
+  $conf['cache_class_cache_form'] = 'DrupalDatabaseCache';
 
-$conf['memcache_key_prefix'] = '{{ memcache_key_prefix }}';
-$conf['memcache_servers'] = array('localhost:11211' => 'default');
+  $conf['memcache_key_prefix'] = '{{ memcache_key_prefix }}';
+  $conf['memcache_servers'] = array('localhost:11211' => 'default');
+}
 
 $conf['environment_indicator_text'] = 'VAGRANT SERVER';
 $conf['environment_indicator_color'] = 'green';
