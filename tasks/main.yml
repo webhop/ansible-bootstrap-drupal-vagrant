@@ -28,7 +28,15 @@
   command: '/usr/bin/mysql -N -s -u {{ drupal_mysql_user }} -p{{ drupal_mysql_password }} -e "SELECT COUNT(1) FROM information_schema.tables WHERE table_schema=''drupal'';"'
   register: drupal_table_count
 
-- name: Copy database settings in for vagrant image
+- name: Copy Drupal settings in for vagrant image
+  template:
+    src: settings.php.j2
+    dest: "{{ doc_root }}/sites/default/settings.php"
+    owner: www-data
+    group: www-data
+    mode: 0644
+
+- name: Copy local settings in for vagrant image
   template:
     src: local_settings.php.j2
     dest: "{{ doc_root }}/sites/default/local_settings.php"
