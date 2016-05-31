@@ -53,14 +53,13 @@
   register: drupal_bootstrapped
 
 - name: Retrieve DB backup from s3
-  local_action:
-    s3:
-      region: "{{ region }}"
-      mode: get
-      bucket: "{{ s3_bucket }}"
-      object: "{{ database_backup_name }}"
-      dest: "/tmp/{{ database_backup_name }}"
-    when: restore_db_backup
+  local_action: s3
+    region: "{{ region }}"
+    mode: get
+    bucket: "{{ s3_bucket }}"
+    object: "{{ database_backup_name }}"
+    dest: "/tmp/{{ database_backup_name }}"
+  when: restore_db_backup
 
 - name: Copy DB backup to vagrant
   copy: src="/tmp/{{ database_backup_name }}" dest="/tmp/{{ database_backup_name }}"
@@ -74,14 +73,13 @@
   when: restore_db_backup
 
 - name: Retrieve files backup from s3
-  local_action:
-    s3:
-      region: "{{ region }}"
-      mode: get
-      bucket: "{{ s3_bucket }}"
-      object: "{{ files_backup_name }}"
-      dest: "/tmp/{{ files_backup_name }}"
-    when: restore_files_backup
+  local_action: s3
+    region: "{{ region }}"
+    mode: get
+    bucket: "{{ s3_bucket }}"
+    object: "{{ files_backup_name }}"
+    dest: "/tmp/{{ files_backup_name }}"
+  when: restore_files_backup
 
 - name: Copy files backup to vagrant
   copy: src="/tmp/{{ files_backup_name }}" dest="/tmp/{{ files_backup_name }}"
