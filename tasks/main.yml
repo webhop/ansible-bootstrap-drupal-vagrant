@@ -4,9 +4,12 @@
   apt:
     name: python-pip
 
-- name: Install MySQL-python
+- name: Install packages
   pip:
-    name: MySQL-python
+    name: "{{ item }}"
+  with_items:
+    - MySQL-python
+    - boto
 
 - name: Create a MySQL database for Drupal.
   mysql_db:
@@ -52,8 +55,13 @@
   no_log: true
   register: drupal_bootstrapped
 
+- name: Copy AWS credentials to vagrant
+  template:
+    src: boto.cfg.j2
+    dest: /etc/boto.cfg
+  when: restore_db_backup
+
 - name: Retrieve DB backup from s3
-  delegate_to: localhost
   s3:
     region: "{{ region }}"
     mode: get
@@ -74,17 +82,12 @@
   when: restore_db_backup
 
 - name: Retrieve files backup from s3
-  delegate_to: localhost
   s3:
     region: "{{ region }}"
     mode: get
     bucket: "{{ s3_bucket }}"
     object: "{{ files_backup_name }}"
     dest: "/tmp/{{ files_backup_name }}"
-  when: restore_files_backup
-
-- name: Copy files backup to vagrant
-  copy: src="/tmp/{{ files_backup_name }}" dest="/tmp/{{ files_backup_name }}"
   when: restore_files_backup
 
 - name: Extract the files backup
