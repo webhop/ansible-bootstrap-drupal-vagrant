@@ -70,10 +70,6 @@
     dest: "/tmp/{{ database_backup_name }}"
   when: restore_db_backup
 
-- name: Copy DB backup to vagrant
-  copy: src="/tmp/{{ database_backup_name }}" dest="/tmp/{{ database_backup_name }}"
-  when: restore_db_backup
-
 - name: Import the DB backup
   mysql_db:
     state: import
