@@ -7,5 +7,6 @@ memcache_key_prefix: drupalvagrant
 restore_db_backup: false
 region: eu-central-1
 drupal_install_profile: minimal
+s3_bucket: webhop-migration-backups
 aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
 aws_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
