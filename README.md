@@ -20,13 +20,14 @@ Requires a working python 2.7 installation in the base vagrant box being used
 - `memcache_key_prefix` - Memcache key prefix to use. (**drupalvagrant**)
 - `restore_db_backup` - Restore DB archive from s3. (**false**)
 - `restore_files_backup` - Restore files archive from s3. (**false**)
-- `region` - When restoring the DB and/ or files use this region in s3 for the fetch operation (**eu-central-1**)
-- `s3_bucket` - S3 bucket name if a restore action is required (**webhop-migration-backups**)
 - `drupal_install_profile` - The installation profile to use. (**minimal**)
 
 
 ##### Variables
 
+- `region` - Region to use when restoring the DB and/ or file dump
+- `aws_credentials` - Amazon Web Service credentials for restore actions
+- `s3_bucket` - S3 bucket name for restore actions
 - `database_backup_name` - Database archive object name in the s3 bucket
 - `files_backup_name` - Files archive object name in the s3 bucket
 
