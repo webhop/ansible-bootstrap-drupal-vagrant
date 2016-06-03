@@ -55,11 +55,27 @@
   no_log: true
   register: drupal_bootstrapped
 
-- name: Retrieve DB backup from s3
-  s3:
+- name: Setting timestamp fact for naming purposes
+  set_fact: epoch="{{ lookup('pipe','date +%Y%m%d%H%M%S') }}"
+  when: restore_db_backup || restore_files_backup
+
+- name: "Assuming the {{ aws_role }} role in the specified account"
+  sts_assume_role:
     region: "{{ region }}"
     aws_access_key: "{{ aws_access_key }}"
     aws_secret_key: "{{ aws_secret_key }}"
+    security_token: "{{ aws_security_token }}"
+    role_arn: "arn:aws:iam::{{ aws_account_number }}:role/{{ aws_role }}"
+    role_session_name: "session_{{ epoch }}"
+  register: assumed_role
+  when: restore_db_backup || restore_files_backup
+
+- name: Retrieve DB backup from s3
+  s3:
+    region: "{{ region }}"
+    aws_access_key: "{{ assumed_role.sts_creds.access_key }}"
+    aws_secret_key: "{{ assumed_role.sts_creds.secret_key }}"
+    security_token: "{{ assumed_role.sts_creds.session_token }}"
     mode: get
     bucket: "{{ s3_bucket }}"
     object: "{{ database_backup_name }}"
@@ -76,8 +92,9 @@
 - name: Retrieve files backup from s3
   s3:
     region: "{{ region }}"
-    aws_access_key: "{{ aws_access_key }}"
-    aws_secret_key: "{{ aws_secret_key }}"
+    aws_access_key: "{{ assumed_role.sts_creds.access_key }}"
+    aws_secret_key: "{{ assumed_role.sts_creds.secret_key }}"
+    security_token: "{{ assumed_role.sts_creds.session_token }}"
     mode: get
     bucket: "{{ s3_bucket }}"
     object: "{{ files_backup_name }}"
