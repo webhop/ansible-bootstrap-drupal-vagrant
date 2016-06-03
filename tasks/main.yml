@@ -58,9 +58,8 @@
 - name: Retrieve DB backup from s3
   s3:
     region: "{{ region }}"
-    aws_access_key: "{{ aws_credentials.access_key }}"
-    aws_secret_key: "{{ aws_credentials.secret_key }}"
-    security_token: "{{ aws_credentials.session_token }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
     mode: get
     bucket: "{{ s3_bucket }}"
     object: "{{ database_backup_name }}"
@@ -77,9 +76,8 @@
 - name: Retrieve files backup from s3
   s3:
     region: "{{ region }}"
-    aws_access_key: "{{ aws_credentials.access_key }}"
-    aws_secret_key: "{{ aws_credentials.secret_key }}"
-    security_token: "{{ aws_credentials.session_token }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
     mode: get
     bucket: "{{ s3_bucket }}"
     object: "{{ files_backup_name }}"
