@@ -57,7 +57,7 @@
 
 - name: Setting timestamp fact for naming purposes
   set_fact: epoch="{{ lookup('pipe','date +%Y%m%d%H%M%S') }}"
-  when: restore_db_backup || restore_files_backup
+  when: restore_db_backup or restore_files_backup
 
 - name: "Assuming the {{ aws_role }} role in the specified account"
   sts_assume_role:
@@ -68,7 +68,7 @@
     role_arn: "arn:aws:iam::{{ aws_account_number }}:role/{{ aws_role }}"
     role_session_name: "session_{{ epoch }}"
   register: assumed_role
-  when: restore_db_backup || restore_files_backup
+  when: restore_db_backup or restore_files_backup
 
 - name: Retrieve DB backup from s3
   s3:
