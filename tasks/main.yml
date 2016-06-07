@@ -105,9 +105,10 @@
   sudo: yes
   unarchive:
     src: "/tmp/{{ files_backup_name }}"
-    dest: "{{ doc_root }}/sites/default/files"
+    dest: "{{ doc_root }}/sites/default"
     owner: www-data
     group: www-data
+    copy: no
   when: restore_files_backup
 
 - name: Run Drupal site-install
