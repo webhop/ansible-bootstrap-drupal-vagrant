@@ -80,14 +80,14 @@
     bucket: "{{ s3_bucket }}"
     object: "{{ database_backup_name }}"
     dest: "/tmp/{{ database_backup_name }}"
-  when: restore_db_backup
+  when: restore_db_backup and db_backup_url is not defined
 
 - name: Import the DB backup
   mysql_db:
     state: import
     name: "{{ drupal_mysql_database }}"
     target: "/tmp/{{ database_backup_name }}"
-  when: restore_db_backup
+  when: restore_db_backup and db_backup_url is not defined
 
 - name: Retrieve files backup from s3
   s3:
@@ -110,6 +110,21 @@
     group: www-data
     copy: no
   when: restore_files_backup
+
+# What if we want to restore DB from a 'public' store?
+- name: Retrieve sanitised DB backup
+  get_url:
+    url: "{{ db_backup_url }}"
+    dest: "/tmp/db_backup.sql.gz"
+  when: db_backup_url is defined
+
+# Extract DB backup
+- name: Import the DB backup
+  mysql_db:
+    state: import
+    name: "{{ drupal_mysql_database }}"
+    target: "/tmp/db_backup.sql.gz"
+  when: db_backup_url is defined
 
 # Download the stage_file_proxy module (when we aren't explicitly restoring the files dump)
 - name: Install the stage_file_proxy drupal module
