@@ -111,6 +111,20 @@
     copy: no
   when: restore_files_backup
 
+# Download the stage_file_proxy module (when we aren't explicitly restoring the files dump)
+- name: Install the stage_file_proxy drupal module
+  command: "/usr/local/bin/drush pm-download stage_file_proxy"
+  when: not restore_files_backup
+
+- name: Enable the stage_file_proxy module
+  command: "/usr/local/bin/drush pm-enable stage_file_proxy -y"
+  when: not restore_files_backup
+
+# Set site to use stage for assets (instead of downloading locally)
+- name: Set the stage URL for the stage_file_proxy module
+  command: "/usr/local/bin/drush variable-set stage_file_proxy_origin '{{ drupal_stage_site_url }}'"
+  when: not restore_files_backup
+
 - name: Run Drupal site-install
   command: "/usr/local/bin/drush site-install {{ drupal_install_profile }} --site-name={{ drupal_site_name }} -y"
   args:
