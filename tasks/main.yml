@@ -133,6 +133,14 @@
     chdir: "{{ doc_root }}"
   when: not restore_files_backup
 
+- name: Ensure files directory exists and is owned by www-data
+  file:
+    dest: "{{ doc_root }}/sites/default/files"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0775
+
 - name: Run Drupal site-install
   command: "/usr/local/bin/drush site-install {{ drupal_install_profile }} --site-name={{ drupal_site_name }} -y"
   args:
