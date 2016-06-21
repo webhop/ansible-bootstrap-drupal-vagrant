@@ -115,7 +115,7 @@
 
 # Download the stage_file_proxy module (when we aren't explicitly restoring the files dump)
 - name: Install the stage_file_proxy drupal module
-  command: "/usr/local/bin/drush pm-download stage_file_proxy"
+  command: "/usr/local/bin/drush pm-download stage_file_proxy -y"
   args:
     chdir: "{{ doc_root }}"
   when: not restore_files_backup
