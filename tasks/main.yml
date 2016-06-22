@@ -34,6 +34,19 @@
 
 # Due to this bug https://github.com/ansible/ansible/issues/9526 we have to split out the write to the shared mount
 # when running on a windows host.
+
+# Ensure the settings file is deleted if it exists
+- name: Check if there is an existing settings.php file in the webroot
+  stat:
+    path: "{{ doc_root }}/sites/default/settings.php"
+  register: php_settings
+
+- name: Delete existing settings.php file
+  file:
+    path: "{{ doc_root }}/sites/default/settings.php"
+    state: absent
+  when: php_settings.stat.exists
+
 - name: Write drupal settings file to tmp
   template:
     src: settings.php.j2
