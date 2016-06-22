@@ -53,6 +53,9 @@ $conf['404_fast_html'] = '<html xmlns="http://www.w3.org/1999/xhtml"><head><titl
 
 $conf['allow_authorize_operations'] = FALSE;
 
+# Turn off the CDN module
+$conf['cdn_status'] = FALSE;
+
 // Override settings in this file
 if (file_exists('./'. conf_path() .'/local_settings.php')) {
   include_once './'. conf_path() .'/local_settings.php';
