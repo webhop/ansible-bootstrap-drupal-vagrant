@@ -37,7 +37,7 @@
 - name: Write drupal settings file to tmp
   template:
     src: settings.php.j2
-    dest: "tmp/drupal_settings.php"
+    dest: "/tmp/drupal_settings.php"
     owner: www-data
     group: www-data
     mode: 0644
