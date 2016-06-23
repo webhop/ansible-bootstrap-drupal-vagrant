@@ -54,7 +54,14 @@ $conf['404_fast_html'] = '<html xmlns="http://www.w3.org/1999/xhtml"><head><titl
 $conf['allow_authorize_operations'] = FALSE;
 
 # Turn off the CDN module
-$conf['cdn_status'] = FALSE;
+$conf['cdn_status'] = 0;
+
+# Ensure caching and preprocessing is turned off for dev
+$conf['cache'] = 0;
+$conf['preprocess_css'] = 0;
+$conf['css_gzip_compression'] = 0;
+$conf['preprocess_js'] = 0;
+$conf['js_gzip_compression'] = 0;
 
 // Override settings in this file
 if (file_exists('./'. conf_path() .'/local_settings.php')) {
