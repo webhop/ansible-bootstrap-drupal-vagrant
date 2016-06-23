@@ -58,14 +58,6 @@
 - name: Move the drupal settings file from tmp to webroot
   command: "mv /tmp/drupal_settings.php {{ doc_root }}/sites/default/settings.php"
 
-- name: Copy local settings in for vagrant image
-  template:
-    src: local_settings.php.j2
-    dest: "{{ doc_root }}/sites/default/local_settings.php"
-    owner: www-data
-    group: www-data
-    mode: 0644
-
 - name: Check if Drupal can be bootstrapped
   command: /usr/local/bin/drush status-report
   args:
