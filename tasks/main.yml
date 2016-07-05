@@ -26,6 +26,7 @@
     - 127.0.0.1
     - ::1
     - localhost
+  when: "{{ drupal_mysql_user != 'root' }}"
 
 - name: Check for existence of Drupal database
   command: '/usr/bin/mysql -N -s -u {{ drupal_mysql_user }} -p{{ drupal_mysql_password }} -e "SELECT COUNT(1) FROM information_schema.tables WHERE table_schema=''drupal'';"'
