@@ -21,7 +21,7 @@ Requires a working python 2.7 installation in the base vagrant box being used
 - `restore_db_backup` - Restore DB archive from s3. (**false**)
 - `restore_files_backup` - Restore files archive from s3. (**false**)
 - `drupal_install_profile` - The installation profile to use. (**minimal**)
-
+- `additional_dbs_to_create` - The names of any additional empty DBs to create (**[]**)
 
 ##### Variables
 

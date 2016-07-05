@@ -11,6 +11,12 @@
     - MySQL-python
     - boto
 
+- name: Create any additional non-drupal databases
+  mysql_db:
+    db: "{{ item }}"
+    state: present
+  with_items: additional_dbs_to_create
+
 - name: Create a MySQL database for Drupal.
   mysql_db:
     db: "{{ drupal_mysql_database }}"
