@@ -1,9 +1,10 @@
 ---
-drupal_mysql_user: drupal
-drupal_mysql_password: drupal
+drupal_mysql_user: root
+drupal_mysql_password: root
 drupal_mysql_database: drupal
 doc_root: /var/www
 memcache_key_prefix: drupalvagrant
 restore_db_backup: false
 restore_files_backup: false
 drupal_install_profile: minimal
+additional_dbs_to_create: []
