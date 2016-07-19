@@ -132,13 +132,6 @@
   when: db_backup_url is defined
 
 
-- name: Enable the stage_file_proxy module
-  command: "/usr/local/bin/drush pm-enable stage_file_proxy -y"
-  args:
-    chdir: "{{ doc_root }}"
-  when: not restore_files_backup
-
-
 - name: Ensure files directory exists and is owned by www-data
   file:
     dest: "{{ doc_root }}/sites/default/files"
@@ -202,9 +195,16 @@
     chdir: "{{ doc_root }}"
   when: drupal_bootstrapped.rc ==  0 and drupal_enabled_set_env.stdout|int ==  1
 
+
 # Download the stage_file_proxy module (when we aren't explicitly restoring the files dump)
 - name: Install the stage_file_proxy drupal module
   command: "/usr/local/bin/drush pm-download stage_file_proxy -y"
+  args:
+    chdir: "{{ doc_root }}"
+  when: not restore_files_backup
+
+- name: Enable the stage_file_proxy module
+  command: "/usr/local/bin/drush pm-enable stage_file_proxy -y"
   args:
     chdir: "{{ doc_root }}"
   when: not restore_files_backup
