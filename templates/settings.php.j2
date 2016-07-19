@@ -86,3 +86,8 @@ if (function_exists('conf_path')) { // allow this file to be sourced regardless 
     include_once './'. conf_path() .'/local_settings.php';
   }
 }
+
+// File paths.
+$conf['file_private_path'] = 'sites/default/private';
+$conf['file_public_path'] = 'sites/default/files';
+$conf['file_temporary_path'] = '/tmp';
