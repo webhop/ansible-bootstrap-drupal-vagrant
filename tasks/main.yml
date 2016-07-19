@@ -2,7 +2,7 @@
 
 - name: Install pip
   apt:
-    name: {{ item }}
+    name: "{{ item }}"
   with_items:
     - python-pip
     - sendmail-bin
