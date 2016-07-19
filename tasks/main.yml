@@ -10,6 +10,7 @@
   with_items:
     - MySQL-python
     - boto
+    - sendmail
 
 - name: Create any additional non-drupal databases
   mysql_db:
