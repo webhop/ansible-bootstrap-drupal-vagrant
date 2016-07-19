@@ -2,7 +2,10 @@
 
 - name: Install pip
   apt:
-    name: python-pip
+    name: {{ item }}
+  with_items:
+    - python-pip
+    - sendmail-bin
 
 - name: Install packages
   pip:
@@ -10,7 +13,7 @@
   with_items:
     - MySQL-python
     - boto
-    - sendmail
+
 
 - name: Create any additional non-drupal databases
   mysql_db:
