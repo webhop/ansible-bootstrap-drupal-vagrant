@@ -102,7 +102,7 @@
     state: import
     name: "{{ drupal_mysql_database }}"
     target: "/tmp/{{ database_backup_name }}"
-  when: drupal_db_dump.stat.exists and drupal_bootstrapped.rc != 0 and restore_db_backup and db_backup_url is not defined
+  when: drupal_bootstrapped.rc != 0 and restore_db_backup and db_backup_url is not defined
 
 - name: Retrieve files backup from s3
   s3:
