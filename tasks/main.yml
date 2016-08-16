@@ -81,6 +81,11 @@
   set_fact: epoch="{{ lookup('pipe','date +%Y%m%d%H%M%S') }}"
   when: restore_db_backup or restore_files_backup
 
+- name: Checking if DB backup is already downloaded
+  stat:
+    path: "/tmp/{{ database_backup_name }}"
+  register: drupal_db_dump
+
 - name: Retrieve DB backup from s3
   s3:
     region: "{{ region }}"
@@ -90,14 +95,14 @@
     bucket: "{{ s3_bucket }}"
     object: "{{ database_backup_name }}"
     dest: "/tmp/{{ database_backup_name }}"
-  when: restore_db_backup and db_backup_url is not defined
+  when: (not drupal_db_dump.stat.exists) and restore_db_backup and db_backup_url is not defined
 
 - name: Import the DB backup
   mysql_db:
     state: import
     name: "{{ drupal_mysql_database }}"
     target: "/tmp/{{ database_backup_name }}"
-  when: restore_db_backup and db_backup_url is not defined
+  when: (not drupal_db_dump.stat.exists) and restore_db_backup and db_backup_url is not defined
 
 - name: Retrieve files backup from s3
   s3:
