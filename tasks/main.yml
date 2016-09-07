@@ -224,3 +224,14 @@
   args:
     chdir: "{{ doc_root }}"
   when: not restore_files_backup
+
+# Download and enable the devel module
+- name: Install the devel drupal module
+  command: "/usr/local/bin/drush pm-download devel -y"
+  args:
+    chdir: "{{ doc_root }}"
+
+- name: Enable the devel module
+  command: "/usr/local/bin/drush pm-enable devel -y"
+  args:
+    chdir: "{{ doc_root }}"
