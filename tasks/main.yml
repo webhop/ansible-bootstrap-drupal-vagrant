@@ -140,7 +140,6 @@
     target: "/tmp/db_backup.sql.gz"
   when: db_backup_url is defined
 
-
 - name: Ensure files directory exists and is owned by www-data
   file:
     dest: "{{ doc_root }}/sites/default/files"
@@ -165,17 +164,18 @@
     chdir: "{{ doc_root }}"
   when: drupal_bootstrapped.rc != 0 and not restore_db_backup
   tags: install
+  register: drupal_site_install
 
 - name: Update Drupal schema
   command: /usr/local/bin/drush updatedb -y
   args:
     chdir: "{{ doc_root }}"
-  when: drupal_bootstrapped.rc ==  0
+  when: drupal_site_install.skipped
   tags: update
 
 - name: Check if Drupal Features are enabled
   command: '/usr/bin/mysql -N -s -u {{ drupal_mysql_user }} -p{{ drupal_mysql_password }} -e "SELECT 1 FROM system WHERE name = ''features'' AND status = 1;" {{ drupal_mysql_database }}'
-  when: drupal_bootstrapped.rc ==  0
+  when: drupal_site_install.skipped
   tags: update
   register: drupal_enabled_features
 
@@ -183,18 +183,18 @@
   command: /usr/local/bin/drush features-revert-all -y
   args:
     chdir: "{{ doc_root }}"
-  when: drupal_bootstrapped.rc ==  0 and drupal_enabled_features.stdout|int ==  1
+  when: drupal_site_install.skipped and drupal_enabled_features.stdout|int ==  1
   tags: update
 
 - name: Clear the drupal cache
   command: /usr/local/bin/drush cache-clear all
   args:
     chdir: "{{ doc_root }}"
-  when: drupal_bootstrapped.rc ==  0
+  when: drupal_site_install.skipped
 
 - name: Check if Drupal Set Environment is enabled
   command: '/usr/bin/mysql -N -s -u {{ drupal_mysql_user }} -p{{ drupal_mysql_password }} -e "SELECT 1 FROM system WHERE name = ''set_environment'' AND status = 1;" {{ drupal_mysql_database }}'
-  when: drupal_bootstrapped.rc ==  0
+  when: drupal_site_install.skipped
   tags: update
   register: drupal_enabled_set_env
 
@@ -202,8 +202,7 @@
   command: /usr/local/bin/drush set-environment --force
   args:
     chdir: "{{ doc_root }}"
-  when: drupal_bootstrapped.rc ==  0 and drupal_enabled_set_env.stdout|int ==  1
-
+  when: drupal_site_install.skipped and drupal_enabled_set_env.stdout|int == 1
 
 # Download the stage_file_proxy module (when we aren't explicitly restoring the files dump)
 - name: Install the stage_file_proxy drupal module
