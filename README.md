@@ -16,6 +16,7 @@ Requires a working python 2.7 installation in the base vagrant box being used
 - `drupal_mysql_user` - User to create in the mysql database for drupal. (**root**)
 - `drupal_mysql_password` - Password to set in mysql for the drupal mysql user. Note that this has no effect when using root user.
 - `drupal_mysql_database` - MySQL database name for drupal database. (**drupal**)
+- `drupal_mysql_prefix` - Optional prefix for drupal database.
 - `doc_root` -  Full path to the website file dir. (**/var/www**)
 - `memcache_key_prefix` - Memcache key prefix to use. (**drupalvagrant**)
 - `restore_db_backup` - Restore DB archive from s3. (**false**)

@@ -2,6 +2,7 @@
 drupal_mysql_user: root
 drupal_mysql_password: root
 drupal_mysql_database: drupal
+drupal_mysql_prefix: ""
 doc_root: /var/www
 memcache_key_prefix: drupalvagrant
 restore_db_backup: false
