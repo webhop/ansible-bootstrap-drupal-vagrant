@@ -174,7 +174,7 @@
   tags: update
 
 - name: Check if Drupal Features are enabled
-  command: '/usr/bin/mysql -N -s -u {{ drupal_mysql_user }} -p{{ drupal_mysql_password }} -e "SELECT 1 FROM system WHERE name = ''features'' AND status = 1;" {{ drupal_mysql_database }}'
+  command: "/usr/local/bin/drush -r /var/www sql-query 'SELECT COUNT(*) FROM {{ (drupal_mysql_prefix != '') | ternary(drupal_mysql_prefix  + '_', '') }}system WHERE name = \"features\" AND status = 1;'"
   when: drupal_site_install.skipped
   tags: update
   register: drupal_enabled_features
@@ -193,7 +193,7 @@
   when: drupal_site_install.skipped
 
 - name: Check if Drupal Set Environment is enabled
-  command: '/usr/bin/mysql -N -s -u {{ drupal_mysql_user }} -p{{ drupal_mysql_password }} -e "SELECT 1 FROM system WHERE name = ''set_environment'' AND status = 1;" {{ drupal_mysql_database }}'
+  command: "/usr/local/bin/drush -r /var/www sql-query 'SELECT COUNT(*) FROM {{ (drupal_mysql_prefix != '') | ternary(drupal_mysql_prefix  + '_', '') }}system WHERE name = \"set_environment\" AND status = 1;'"
   when: drupal_site_install.skipped
   tags: update
   register: drupal_enabled_set_env
