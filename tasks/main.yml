@@ -172,6 +172,12 @@
     chdir: "{{ doc_root }}"
   tags: install
 
+- name: Rebuild Drupal registry
+  command: /usr/local/bin/drush registry-rebuild
+  args:
+    chdir: "{{ doc_root }}"
+  tags: install
+
 - name: Update Drupal schema
   command: /usr/local/bin/drush updatedb -y
   args:
