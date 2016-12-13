@@ -177,6 +177,7 @@
   args:
     chdir: "{{ doc_root }}"
   tags: install
+  ignore_errors: yes
 
 - name: Update Drupal schema
   command: /usr/local/bin/drush updatedb -y
