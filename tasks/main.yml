@@ -166,6 +166,12 @@
   tags: install
   register: drupal_site_install
 
+- name: Enable drupal memcache module
+  command: /usr/local/bin/drush en memcache -y
+  args:
+    chdir: "{{ doc_root }}"
+  tags: install
+
 - name: Update Drupal schema
   command: /usr/local/bin/drush updatedb -y
   args:
