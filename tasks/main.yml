@@ -172,6 +172,13 @@
     chdir: "{{ doc_root }}"
   tags: install
 
+- name: "Invalidate Views cache (https://www.drupal.org/node/2297647)"
+  command: "/usr/local/bin/drush php-eval 'views_invalidate_cache();'"
+  args:
+    chdir: "{{ doc_root }}"
+  tags: install
+  ignore_errors: yes
+
 - name: Rebuild Drupal registry
   command: /usr/local/bin/drush registry-rebuild
   args:
@@ -179,11 +186,12 @@
   tags: install
   ignore_errors: yes
 
-- name: Update Drupal schema
+- name: Update Drupal schema (pass 1)
   command: /usr/local/bin/drush updatedb -y
   args:
     chdir: "{{ doc_root }}"
   when: drupal_site_install.skipped
+  ignore_errors: yes
   tags: update
 
 - name: Check if Drupal Features are enabled
@@ -192,7 +200,22 @@
   tags: update
   register: drupal_enabled_features
 
-- name: Revert Drupal Features
+- name: Revert Drupal Features (pass 1)
+  command: /usr/local/bin/drush features-revert-all -y
+  args:
+    chdir: "{{ doc_root }}"
+  when: drupal_site_install.skipped and drupal_enabled_features.stdout|int ==  1
+  ignore_errors: yes
+  tags: update
+
+- name: Update Drupal schema (pass 2)
+  command: /usr/local/bin/drush updatedb --cache-clear=0 -y
+  args:
+    chdir: "{{ doc_root }}"
+  when: drupal_site_install.skipped
+  tags: update
+
+- name: Revert Drupal Features (pass 2)
   command: /usr/local/bin/drush features-revert-all -y
   args:
     chdir: "{{ doc_root }}"
