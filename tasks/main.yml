@@ -172,42 +172,54 @@
     chdir: "{{ doc_root }}"
   tags: install
 
-- name: Rebuild Drupal registry
-  command: /usr/local/bin/drush registry-rebuild
-  args:
-    chdir: "{{ doc_root }}"
-  tags: install
+- name: "Request updatedb-status (may fail)"
+  command: "/usr/local/bin/drush -r /var/www updatedb-status -y"
+  register: updatedb_status_output
   ignore_errors: yes
+  tags: update
 
-- name: Update Drupal schema
-  command: /usr/local/bin/drush updatedb -y
-  args:
-    chdir: "{{ doc_root }}"
-  when: drupal_site_install.skipped
+- name: Debug output of drush updatedb-status in case it failed
+  debug: msg="{{ updatedb_status_output }}"
+  when: "'FAILED' in updatedb_status_output.stderr"
+  tags: update
+
+- name: Rebuild Drupal registry in case drush updatedb-status failed
+  command: "/usr/local/bin/drush -r /var/www registry-rebuild --no-cache-clear"
+  when: "'FAILED' in updatedb_status_output.stderr"
+  tags: update
+
+- name: "Request updatedb-status (may NOT fail)"
+  command: "/usr/local/bin/drush -r /var/www updatedb-status -y"
+  register: updatedb_status_output
+  when: "'FAILED' in updatedb_status_output.stderr"
+  tags: update
+
+- name: "Updating Drupal DB schema if applicable (may fail)"
+  command: "/usr/local/bin/drush -r /var/www updatedb --clear-cache=0 -y"
+  register: updatedb_output
+  when: "updatedb_status_output.stdout is defined and 'No database updates required' not in updatedb_status_output.stdout"
+  ignore_errors: yes
+  tags: update
+
+- name: Debug output if drush updb failed
+  debug: msg="{{ updatedb_output }}"
+  when: "updatedb_output is defined and 'FAILED' in updatedb_output.stderr"
   tags: update
 
 - name: Check if Drupal Features are enabled
   command: "/usr/local/bin/drush -r /var/www sql-query 'SELECT COUNT(*) FROM {system} WHERE name = \"features\" AND status = 1;' --db-prefix"
-  when: drupal_site_install.skipped
+  when: "drupal_site_install is not defined or drupal_site_install.skipped"
   tags: update
   register: drupal_enabled_features
 
-- name: Revert Drupal Features
-  command: /usr/local/bin/drush features-revert-all -y
-  args:
-    chdir: "{{ doc_root }}"
-  when: drupal_site_install.skipped and drupal_enabled_features.stdout|int ==  1
+- name: Reverting Drupal Features
+  command: "/usr/local/bin/drush -r /var/www features-revert-all -y"
+  when: "drupal_enabled_features is defined and drupal_enabled_features.stdout|int ==  1"
   tags: update
-
-- name: Clear the drupal cache
-  command: /usr/local/bin/drush cache-clear all
-  args:
-    chdir: "{{ doc_root }}"
-  when: drupal_site_install.skipped
 
 - name: Check if Drupal Set Environment is enabled
   command: "/usr/local/bin/drush -r /var/www sql-query 'SELECT COUNT(*) FROM {system} WHERE name = \"set_environment\" AND status = 1;' --db-prefix"
-  when: drupal_site_install.skipped
+  when: "drupal_site_install is defined and drupal_site_install.skipped"
   tags: update
   register: drupal_enabled_set_env
 
@@ -215,7 +227,7 @@
   command: /usr/local/bin/drush set-environment --force
   args:
     chdir: "{{ doc_root }}"
-  when: drupal_site_install.skipped and drupal_enabled_set_env.stdout|int == 1
+  when: "drupal_enabled_set_env is defined and drupal_enabled_set_env.stdout|int == 1"
 
 # Download the stage_file_proxy module (when we aren't explicitly restoring the files dump)
 - name: Install the stage_file_proxy drupal module
