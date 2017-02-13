@@ -6,6 +6,7 @@
   with_items:
     - python-pip
     - sendmail-bin
+  tags: [ provision ]
 
 - name: Install packages
   pip:
@@ -13,7 +14,7 @@
   with_items:
     - MySQL-python
     - boto
-
+  tags: [ provision ]
 
 - name: Create any additional non-drupal databases
   mysql_db:
