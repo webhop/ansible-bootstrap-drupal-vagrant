@@ -211,7 +211,7 @@
 
 - name: Reverting Drupal Features
   command: "/usr/local/bin/drush -r /var/www features-revert-all -y"
-  when: drupal_enabled_features is defined and drupal_enabled_features.stdout|int ==  1
+  when: drupal_enabled_features is defined and drupal_enabled_features.stderr|d('') == '1'
   tags: update
 
 - name: Check if Drupal Set Environment is enabled
