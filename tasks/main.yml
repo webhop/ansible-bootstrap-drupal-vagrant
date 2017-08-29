@@ -205,7 +205,7 @@
 
 - name: Check if Drupal Features are enabled
   command: "/usr/local/bin/drush -r /var/www sql-query 'SELECT COUNT(*) FROM {system} WHERE name = \"features\" AND status = 1;' --db-prefix"
-  when: drupal_site_install is not defined or drupal_site_install.skipped
+  when: drupal_site_install is not defined or drupal_site_install|skipped
   tags: update
   register: drupal_enabled_features
 
@@ -216,7 +216,7 @@
 
 - name: Check if Drupal Set Environment is enabled
   command: "/usr/local/bin/drush -r /var/www sql-query 'SELECT COUNT(*) FROM {system} WHERE name = \"set_environment\" AND status = 1;' --db-prefix"
-  when: drupal_site_install is defined and drupal_site_install.skipped
+  when: drupal_site_install is defined and drupal_site_install|skipped
   tags: update
   register: drupal_enabled_set_env
 
