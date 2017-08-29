@@ -224,7 +224,7 @@
   command: /usr/local/bin/drush set-environment --force
   args:
     chdir: "{{ doc_root }}"
-  when: "drupal_enabled_set_env is defined and drupal_enabled_set_env.stdout|int == 1"
+  when: drupal_enabled_set_env is defined and drupal_enabled_set_env.stderr|d('') == '1'
 
 # Download the stage_file_proxy module (when we aren't explicitly restoring the files dump)
 - name: Install the stage_file_proxy drupal module
