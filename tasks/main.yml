@@ -204,7 +204,7 @@
   tags: update
 
 - name: Check if Drupal Features are enabled
-  shell: "/usr/local/bin/drush -r /var/www spm-list | grep '(features)' | grep Enabled"
+  shell: "/usr/local/bin/drush -r /var/www pm-list | grep '(features)' | grep Enabled"
   when: drupal_site_install is not defined or drupal_site_install|skipped
   tags: update
   register: drupal_enabled_features
@@ -215,7 +215,7 @@
   tags: update
 
 - name: Check if Drupal Set Environment is enabled
-  shell: "/usr/local/bin/drush -r /var/www spm-list | grep '(set_environment)' | grep Enabled"
+  shell: "/usr/local/bin/drush -r /var/www pm-list | grep '(set_environment)' | grep Enabled"
   when: drupal_site_install is defined and drupal_site_install|skipped
   tags: update
   register: drupal_enabled_set_env
