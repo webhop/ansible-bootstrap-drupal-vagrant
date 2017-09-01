@@ -33,7 +33,7 @@
     - 127.0.0.1
     - ::1
     - localhost
-  when: "{{ drupal_mysql_user != 'root' }}"
+  when: drupal_mysql_user != 'root'
 
 - name: Check for existence of Drupal database
   command: '/usr/bin/mysql -N -s -u {{ drupal_mysql_user }} -p{{ drupal_mysql_password }} -e "SELECT COUNT(1) FROM information_schema.tables WHERE table_schema=''drupal'';"'
@@ -159,7 +159,7 @@
   command: "/usr/local/bin/drush site-install {{ drupal_install_profile }} --site-name={{ drupal_site_name }} -y"
   args:
     chdir: "{{ doc_root }}"
-  when: "{{ drupal_bootstrapped.rc != 0 and not restore_db_backup }}"
+  when: drupal_bootstrapped.rc != 0 and not restore_db_backup
   tags: install
   register: drupal_site_install
 
