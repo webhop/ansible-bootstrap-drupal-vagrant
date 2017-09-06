@@ -207,24 +207,26 @@
   shell: "/usr/local/bin/drush -r /var/www pm-list | grep '(features)' | grep Enabled"
   when: drupal_site_install is not defined or drupal_site_install|skipped
   tags: update
+  ignore_errors: yes
   register: drupal_enabled_features
 
 - name: Reverting Drupal Features
   command: "/usr/local/bin/drush -r /var/www features-revert-all -y"
-  when: drupal_enabled_features is defined and drupal_enabled_features.rc == '0'
+  when: drupal_enabled_features is defined and drupal_enabled_features|success
   tags: update
 
 - name: Check if Drupal Set Environment is enabled
   shell: "/usr/local/bin/drush -r /var/www pm-list | grep '(set_environment)' | grep Enabled"
   when: drupal_site_install is defined and drupal_site_install|skipped
   tags: update
+  ignore_errors: yes
   register: drupal_enabled_set_env
 
 - name: Set the drupal environment
   command: /usr/local/bin/drush set-environment --force
   args:
     chdir: "{{ doc_root }}"
-  when: drupal_enabled_set_env is defined and drupal_enabled_set_env.rc == '0'
+  when: drupal_enabled_set_env is defined and drupal_enabled_set_env|success
 
 # Download the stage_file_proxy module (when we aren't explicitly restoring the files dump)
 - name: Install the stage_file_proxy drupal module
