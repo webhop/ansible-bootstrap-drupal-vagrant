@@ -4,6 +4,7 @@
     name: "{{ item }}"
   with_items:
     - sendmail-bin
+    - libmysqlclient-dev
 
 - name: Install pip modules
   pip:
@@ -11,6 +12,8 @@
   with_items:
     - MySQL-python
     - boto
+    - boto3
+    - botocore
 
 - name: Create any additional non-drupal databases
   mysql_db:
