@@ -244,12 +244,25 @@
     chdir: "{{ doc_root }}"
   when: not restore_files_backup
 
-# Set site to use stage for assets (instead of downloading locally)
+- name: Obtain Drupal version
+  command: "drush status|grep 'Drupal version'|cut -d: -f2|sed -e 's/^\s*//g'|cut -f1 -d."
+  args:
+    chdir: "{{ doc_root }}"
+  register: drupal_version
+
+# Set site to use stage for assets (instead of downloading locally) for Drupal version < 8
 - name: Set the stage URL for the stage_file_proxy module
   command: "/usr/local/bin/drush variable-set stage_file_proxy_origin '{{ drupal_stage_site_url }}'"
   args:
     chdir: "{{ doc_root }}"
-  when: not restore_files_backup
+  when: not restore_files_backup and drupal_version.stdout|int < 8
+
+# Set site to use stage for assets (instead of downloading locally) for Drupal version > 7
+- name: Set the stage URL for the stage_file_proxy module
+  command: "drush config-set stage_file_proxy.settings origin '{{ drupal_stage_site_url }}' -y"
+  args:
+    chdir: "{{ doc_root }}"
+  when: not restore_files_backup and drupal_version.stdout|int > 7
 
 # Download and enable the devel module
 - name: Install the devel drupal module
