@@ -4,6 +4,7 @@
     name: "{{ item }}"
   with_items:
     - sendmail-bin
+    - libmysqlclient-dev
 
 - name: Install pip modules
   pip:
@@ -11,6 +12,8 @@
   with_items:
     - MySQL-python
     - boto
+    - boto3
+    - botocore
 
 - name: Create any additional non-drupal databases
   mysql_db:
@@ -241,12 +244,34 @@
     chdir: "{{ doc_root }}"
   when: not restore_files_backup
 
-# Set site to use stage for assets (instead of downloading locally)
+- name: Obtain Drupal Status
+  shell: /usr/local/bin/drush status | grep "Drupal version"
+  args:
+    chdir: "{{ doc_root }}"
+  register: drupal_status
+
+- name: Debug drupal_status variable
+  debug: msg="{{ drupal_status.stdout }}"
+
+- name: Obtain Drupal Version
+  set_fact: drupal_version_int="{{ drupal_status.stdout | replace(' ', '') | regex_replace('[a-zA-Z]+:([0-9]{1,2})\.*[0-9]*\.*[0-9]*', '\1') }}"
+
+- name: Debug drupal_version variable
+  debug: msg="{{ drupal_version_int }}"
+
+# Set site to use stage for assets (instead of downloading locally) for Drupal version <= v7
 - name: Set the stage URL for the stage_file_proxy module
   command: "/usr/local/bin/drush variable-set stage_file_proxy_origin '{{ drupal_stage_site_url }}'"
   args:
     chdir: "{{ doc_root }}"
-  when: not restore_files_backup
+  when: not restore_files_backup and drupal_version_int|int <= 7
+
+# Set site to use stage for assets (instead of downloading locally) for Drupal version >= v8
+- name: Set the stage URL for the stage_file_proxy module
+  command: "drush config-set stage_file_proxy.settings origin '{{ drupal_stage_site_url }}' -y"
+  args:
+    chdir: "{{ doc_root }}"
+  when: not restore_files_backup and drupal_version_int|int >= 8
 
 # Download and enable the devel module
 - name: Install the devel drupal module
