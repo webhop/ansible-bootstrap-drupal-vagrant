@@ -245,7 +245,7 @@
   when: not restore_files_backup
 
 - name: Obtain Drupal Status
-  command: "/usr/bin/local/drush status"
+  command: "/usr/local/bin/drush status"
   args:
     chdir: "{{ doc_root }}"
   register: drupal_status
