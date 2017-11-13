@@ -244,22 +244,6 @@
     chdir: "{{ doc_root }}"
   when: not restore_files_backup
 
-#- name: Obtain Drupal Status
-#  shell: /usr/local/bin/drush status | grep "Drupal version"
-#  args:
-#    chdir: "{{ doc_root }}"
-#  register: drupal_status
-
-#- name: Debug drupal_status variable
-#  debug: msg="{{ drupal_status.stdout }}"
-
-#- name: Obtain Drupal Version
-#  set_fact: drupal_version_int="{{ drupal_status.stdout | replace(' ', '') | regex_replace('[a-zA-Z]+:([0-9]{1,2})\.*[0-9]*\.*[0-9]*', '\1') }}"
-
-#- name: Debug drupal_version variable
-#  debug: msg="{{ drupal_version_int }}"
-
-
 - name: Fetching Drupal Status
   command: "/usr/local/bin/drush status --format=json"
   args:
@@ -269,27 +253,27 @@
 - name: Validate status command result
   fail: msg="Command returned a non-zero status - {{ status_command_result }}"
   when: status_command_result.rc != 0
-      
+
 - name: Convert status output from json
   set_fact:
     drupal_status__: "{{ status_command_result.stdout | from_json }}"
 
 - name: Find out Drupal version
   set_fact:
-    drupal_version__: "{{ drupal_status__.drupal.value }}"
+    drupal_version__: "{{ drupal_status__['drupal-version'] }}"
 
-- debug: 
+- debug:
     msg: "Drupal version set to {{ drupal_version__ }}"
 
-# Set site to use stage for assets (instead of downloading locally) for Drupal version <= v7
-- name: Set the stage URL for the stage_file_proxy module
+# Set site to use stage for assets (instead of downloading locally) for Drupal version v7
+- name: Set the stage URL for the stage_file_proxy module for v7
   command: "/usr/local/bin/drush variable-set stage_file_proxy_origin '{{ drupal_stage_site_url }}'"
   args:
     chdir: "{{ doc_root }}"
-  when: not restore_files_backup and drupal_version__ | version_compare('8.0', '<') and drupal_version__ | version_compare('7.0', '>')
+  when: not restore_files_backup and drupal_version__ | version_compare('8.0', '<') and drupal_version__ | version_compare('7.0', '>=')
 
 # Set site to use stage for assets (instead of downloading locally) for Drupal version >= v8
-- name: Set the stage URL for the stage_file_proxy module
+- name: Set the stage URL for the stage_file_proxy module for v8
   command: "drush config-set stage_file_proxy.settings origin '{{ drupal_stage_site_url }}' -y"
   args:
     chdir: "{{ doc_root }}"
