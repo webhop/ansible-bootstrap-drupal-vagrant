@@ -245,7 +245,7 @@
   when: not restore_files_backup
 
 - name: Obtain Drupal version
-  command: "drush status|grep 'Drupal version'|cut -d: -f2|sed -e 's/[[:space:]]*//g'|cut -f1 -d."
+  command: "drush status|grep 'Drupal version'|cut -d: -f2|tr ' ' ''|cut -f1 -d."
   args:
     chdir: "{{ doc_root }}"
   register: drupal_version
