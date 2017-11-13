@@ -244,10 +244,14 @@
     chdir: "{{ doc_root }}"
   when: not restore_files_backup
 
-- name: Obtain Drupal version
-  command: "drush status|grep 'Drupal version'|cut -d: -f2|tr ' ' ''|cut -f1 -d."
+- name: Obtain Drupal Status
+  command: "/usr/bin/local/drush status"
   args:
     chdir: "{{ doc_root }}"
+  register: drupal_status
+
+- name: Obtain Drupal Version
+  command: "echo {{ drupal_status }}|grep 'Drupal version'|cut -d: -f2|tr ' ' ''|cut -f1 -d."
   register: drupal_version
 
 # Set site to use stage for assets (instead of downloading locally) for Drupal version <= v7
