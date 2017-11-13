@@ -285,7 +285,7 @@
   debug: msg="{{ drupal_status.stdout }}"
 
 - name: Obtain Drupal Version
-  shell: "echo '{{ drupal_status.stdout }}'|cut -d: -f2|tr -s ' '|tr ' ' '.'|cut -f2 -d."
+  shell: "echo {{ drupal_status.stdout | replace(' ', '') | quote }} | cut -d: -f2 | cut -f2 -d."
   register: drupal_version_int
 
 - name: Debug drupal_version variable
