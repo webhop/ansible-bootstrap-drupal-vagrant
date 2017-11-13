@@ -250,9 +250,15 @@
     chdir: "{{ doc_root }}"
   register: drupal_status
 
+- name: Debug drupal_status variable
+  debug: msg="{{ drupal_status }}"
+
 - name: Obtain Drupal Version
-  command: "echo {{ drupal_status }}|grep 'Drupal version'|cut -d: -f2|tr ' ' ''|cut -f1 -d."
+  command: "echo '{{ drupal_status }}'|grep 'Drupal version'|cut -d: -f2|tr ' ' ''|cut -f1 -d."
   register: drupal_version
+
+- name: Debug drupal_version variable
+  debug: msg="{{ drupal_version }}"
 
 # Set site to use stage for assets (instead of downloading locally) for Drupal version <= v7
 - name: Set the stage URL for the stage_file_proxy module
