@@ -244,37 +244,54 @@
     chdir: "{{ doc_root }}"
   when: not restore_files_backup
 
-# Obtain Drupal Status output, retry 3 times to try to force those errors out
-- name: Fetching Drupal Status Report
-  command: "drush status-report --format=json"
+## Obtain Drupal Status output, retry 3 times to try to force those errors out
+#- name: Fetching Drupal Status Report
+#  command: "drush status-report --format=json"
+#  args:
+#    chdir: "{{ doc_root }}"
+#  register: status_report_command_result
+#  until: (status_report_command_result.stdout | from_json).values() | selectattr('severity', 'equalto', 'Error') | selectattr('description', 'search', 'There was a problem checking available updates') | list | length == 0
+#  retries: 3
+#  delay: 10
+
+#- name: Validate Drupal status report command result
+#  fail: msg="Command returned a non-zero status - {{ status_report_command_result }}"
+#  when: status_report_command_result.rc != 0
+      
+#- name: Convert Drupal status report from json
+#  set_fact:
+#    drupal_status_report__: "{{ status_report_command_result.stdout | from_json }}"
+
+#- name: Find out Drupal version
+#  set_fact:
+#    drupal_version__: "{{ drupal_status_report__.drupal.value }}"
+
+#- debug: 
+#  msg: "Drupal version set to {{ drupal_version__ }}"
+
+#- name: Obtain Drupal Version
+#  command: "echo '{{ drupal_version__ }}'|cut -f1 -d."
+#  register: drupal_version_int
+
+
+
+- name: Obtain Drupal Status
+  shell: /usr/local/bin/drush status | grep "Drupal version"
   args:
     chdir: "{{ doc_root }}"
-  register: status_report_command_result
-  until: (status_report_command_result.stdout | from_json).values() | selectattr('severity', 'equalto', 'Error') | selectattr('description', 'search', 'There was a problem checking available updates') | list | length == 0
-  retries: 3
-  delay: 10
+  register: drupal_status
 
-- name: Validate Drupal status report command result
-  fail: msg="Command returned a non-zero status - {{ status_report_command_result }}"
-  when: status_report_command_result.rc != 0
-      
-- name: Convert Drupal status report from json
-  set_fact:
-    drupal_status_report__: "{{ status_report_command_result.stdout | from_json }}"
-
-- name: Find out Drupal version
-  set_fact:
-    drupal_version__: "{{ drupal_status_report__.drupal.value }}"
-
-- debug: 
-  msg: "Drupal version set to {{ drupal_version__ }}"
+- name: Debug drupal_status variable
+  debug: msg="{{ drupal_status }}"
 
 - name: Obtain Drupal Version
-  command: "echo '{{ drupal_version__ }}'|cut -f1 -d."
+  command: "echo '{{ drupal_status }}'|cut -d: -f2|tr ' ' ''|cut -f1 -d."
   register: drupal_version_int
 
 - name: Debug drupal_version variable
   debug: msg="{{ drupal_version_int }}"
+
+
 
 # Set site to use stage for assets (instead of downloading locally) for Drupal version <= v7
 - name: Set the stage URL for the stage_file_proxy module
