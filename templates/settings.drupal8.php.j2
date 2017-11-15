@@ -1,0 +1,98 @@
+<?php
+
+$databases = array (
+  'default' =>
+  array (
+    'default' =>
+    array (
+      'driver' => 'mysql',
+      'database' => '{{ drupal_mysql_database }}',
+      'username' => '{{ drupal_mysql_user }}',
+      'password' => '{{ drupal_mysql_password }}',
+      'host' => 'localhost',
+      'port' => '3306',
+      'prefix' => '{{ drupal_mysql_prefix }}',
+    ),
+  ),
+);
+
+$config_directories = array(
+  CONFIG_SYNC_DIRECTORY => 'sites/default/files/sync',
+);
+
+$settings['trusted_host_patterns'] = [ '.*' ];
+
+$update_free_access = FALSE;
+
+ini_set('session.gc_probability', 1);
+ini_set('session.gc_divisor', 100);
+ini_set('session.gc_maxlifetime', 200000);
+ini_set('session.cookie_lifetime', 2000000);
+
+$settings['404_fast_paths_exclude'] = '/\/(?:styles)|(?:system\/files)\//';
+$settings['404_fast_paths'] = '/\.(?:txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i';
+$settings['404_fast_html'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL "@path" was not found on this server.</p></body></html>';
+# drupal_fast_404();
+
+$settings['allow_authorize_operations'] = FALSE;
+
+$settings['hash_salt'] = 'ce65aefe7e22bc7c92398jf32j3ew8a0ab6c349ede1eea011251fe3bc9b55b';
+
+$settings['error_level'] = 0;
+
+// Cache settings.
+$settings['cache'] = 1;
+$settings['preprocess_css'] = 1;
+$settings['css_gzip_compression'] = 0;
+$settings['advagg_gzip'] = 0;
+$settings['preprocess_js'] = 1;
+$settings['js_gzip_compression'] = 0;
+$settings['cache_lifetime'] = 0;
+$settings['page_cache_maximum_age'] = 86400;
+$settings['reverse_proxy'] = TRUE;
+$settings['reverse_proxy_addresses'] = array('127.0.0.1');
+$settings['reverse_proxy_header'] = 'HTTP_X_FORWARDED_FOR';
+if (!empty($_SERVER[$settings['reverse_proxy_header']])) {
+  $forwarded = explode(',', $_SERVER[$settings['reverse_proxy_header']]);
+  $forwarded = array_map('trim', $forwarded);
+  drupal_static('ip_address', $forwarded[0]);
+}
+
+$settings['cache']['default'] = 'cache.backend.memcache';
+$settings['memcache']['stampede_protection'] = TRUE;
+$settings['memcache']['servers'] = array('localhost:11211' => 'default');
+
+
+$settings['cdn_status'] = 0;
+$settings['expire_status'] = 2;
+$settings['expire_node_node_page'] = 1;
+$settings['expire_node_actions'] = array(
+  2 => 2,
+  3 => 3,
+  1 => 0,
+);
+
+$settings['cron_safe_threshold'] = 0;
+$settings['syslog_format'] = '!base_url !timestamp !type !ip !request_uri !referer !uid !link !message';
+
+
+// Expose webhop environment to modules
+$settings['beamly_webhop_environment'] = 'development';
+
+// AWS Credentials (used by s3fs module)
+$settings['awssdk2_use_instance_profile'] = TRUE;
+$settings['awssdk2_default_cache_config'] = '/tmp/aws_credentials';
+
+// s3fs module config
+$settings['s3fs_bucket'] = '{{ s3_bucket }}';
+$settings['s3fs_region'] = '{{ s3_region }}';
+$settings['s3fs_use_cname'] = TRUE;
+$settings['s3fs_domain'] = $_SERVER['HTTP_HOST'];
+$settings['s3fs_no_rewrite_cssjs'] = TRUE;
+$settings['s3fs_use_s3_for_private'] = TRUE;
+
+// File paths.
+$settings['file_private_path'] = 'sites/default/private';
+$settings['file_public_path'] = 'sites/default/files';
+$settings['file_temporary_path'] = '/tmp';
+
