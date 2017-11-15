@@ -9,4 +9,3 @@ restore_db_backup: false
 restore_files_backup: false
 drupal_install_profile: minimal
 additional_dbs_to_create: []
-drupal_version: 7

@@ -52,11 +52,6 @@ $settings['page_cache_maximum_age'] = 86400;
 $settings['reverse_proxy'] = TRUE;
 $settings['reverse_proxy_addresses'] = array('127.0.0.1');
 $settings['reverse_proxy_header'] = 'HTTP_X_FORWARDED_FOR';
-if (!empty($_SERVER[$settings['reverse_proxy_header']])) {
-  $forwarded = explode(',', $_SERVER[$settings['reverse_proxy_header']]);
-  $forwarded = array_map('trim', $forwarded);
-  drupal_static('ip_address', $forwarded[0]);
-}
 
 $settings['cache']['default'] = 'cache.backend.memcache';
 $settings['memcache']['stampede_protection'] = TRUE;
@@ -83,6 +78,9 @@ $settings['beamly_webhop_environment'] = 'development';
 $settings['awssdk2_use_instance_profile'] = TRUE;
 $settings['awssdk2_default_cache_config'] = '/tmp/aws_credentials';
 
+if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
+  include $app_root . '/' . $site_path . '/settings.local.php';
+}
 
 // File paths.
 $settings['file_private_path'] = 'sites/default/private';

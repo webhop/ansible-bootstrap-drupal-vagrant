@@ -42,6 +42,26 @@
   command: '/usr/bin/mysql -N -s -u {{ drupal_mysql_user }} -p{{ drupal_mysql_password }} -e "SELECT COUNT(1) FROM information_schema.tables WHERE table_schema=''drupal'';"'
   register: drupal_table_count
 
+- name: Fetching Drupal Status
+  command: "/usr/local/bin/drush status --format=json"
+  args:
+    chdir: "{{ doc_root }}"
+  register: status_command_result
+
+- name: Validate status command result
+  fail: msg="Command returned a non-zero status - {{ status_command_result }}"
+  when: status_command_result.rc != 0
+
+- name: Convert status output from json
+  set_fact:
+    drupal_status__: "{{ status_command_result.stdout | from_json }}"
+    
+- name: Find out Drupal version
+  set_fact:
+    drupal_version__: "{{ drupal_status__['drupal-version'] }}"
+
+- debug:
+    msg: "Drupal version set to {{ drupal_version__ }}"
 
 # Due to this bug https://github.com/ansible/ansible/issues/9526 we have to split out the write to the shared mount
 # when running on a windows host.
@@ -60,7 +80,7 @@
 
 - name: Write drupal settings file to tmp
   template:
-    src: "settings.drupal{{ drupal_version }}.php.j2"
+    src: "settings.drupal{{ drupal_version__ }}.php.j2"
     dest: "/tmp/drupal_settings.php"
     owner: www-data
     group: www-data
@@ -244,26 +264,6 @@
     chdir: "{{ doc_root }}"
   when: not restore_files_backup
 
-- name: Fetching Drupal Status
-  command: "/usr/local/bin/drush status --format=json"
-  args:
-    chdir: "{{ doc_root }}"
-  register: status_command_result
-
-- name: Validate status command result
-  fail: msg="Command returned a non-zero status - {{ status_command_result }}"
-  when: status_command_result.rc != 0
-
-- name: Convert status output from json
-  set_fact:
-    drupal_status__: "{{ status_command_result.stdout | from_json }}"
-
-- name: Find out Drupal version
-  set_fact:
-    drupal_version__: "{{ drupal_status__['drupal-version'] }}"
-
-- debug:
-    msg: "Drupal version set to {{ drupal_version__ }}"
 
 # Set site to use stage for assets (instead of downloading locally) for Drupal version v7
 - name: Set the stage URL for the stage_file_proxy module for v7
