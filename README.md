@@ -23,7 +23,7 @@ Requires a working python 2.7 installation in the base vagrant box being used
 - `restore_files_backup` - Restore files archive from s3. (**false**)
 - `drupal_install_profile` - The installation profile to use. (**minimal**)
 - `additional_dbs_to_create` - The names of any additional empty DBs to create (**[]**)
-
+- `drupal_version` - The major version of Drupal that we're bootstrapping (**7**)
 ##### Variables
 
 - `region` - Region to use when restoring the DB and/ or file dump
@@ -40,7 +40,8 @@ Usage
 roles:
     - { role: webhop.bootstrap-drupal-vagrant,
         database_backup_url: https://s3.amazonaws.aws.com/sites/backups/mysite.zip,
-        restore_db_backup: true
+        restore_db_backup: true,
+        drupal_version: 8
     }
 ```
 
