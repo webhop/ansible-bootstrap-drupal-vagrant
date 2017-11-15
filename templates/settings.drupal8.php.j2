@@ -83,13 +83,6 @@ $settings['beamly_webhop_environment'] = 'development';
 $settings['awssdk2_use_instance_profile'] = TRUE;
 $settings['awssdk2_default_cache_config'] = '/tmp/aws_credentials';
 
-// s3fs module config
-$settings['s3fs_bucket'] = '{{ s3_bucket }}';
-$settings['s3fs_region'] = '{{ s3_region }}';
-$settings['s3fs_use_cname'] = TRUE;
-$settings['s3fs_domain'] = $_SERVER['HTTP_HOST'];
-$settings['s3fs_no_rewrite_cssjs'] = TRUE;
-$settings['s3fs_use_s3_for_private'] = TRUE;
 
 // File paths.
 $settings['file_private_path'] = 'sites/default/private';
