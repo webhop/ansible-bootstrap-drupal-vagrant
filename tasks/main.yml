@@ -63,6 +63,9 @@
 - debug:
     msg: "Drupal version set to {{ drupal_version__ }}"
 
+- name: Get major version of Drupal install
+  set_fact: drupal_version_major__="{{ drupal_version__ | regex_replace('([0-9]{1,2})\.*[0-9]*\.*[0-9]*', '\1') }}"
+ 
 # Due to this bug https://github.com/ansible/ansible/issues/9526 we have to split out the write to the shared mount
 # when running on a windows host.
 
@@ -80,7 +83,7 @@
 
 - name: Write drupal settings file to tmp
   template:
-    src: "settings.drupal{{ drupal_version__ }}.php.j2"
+    src: "settings.drupal{{ drupal_version_major__ }}.php.j2"
     dest: "/tmp/drupal_settings.php"
     owner: www-data
     group: www-data
