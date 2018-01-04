@@ -16,8 +16,16 @@ $databases = array (
   ),
 );
 
+$databases['default']['default']['unix_socket'] = '/var/run/mysqld/mysqld.sock';
+$databases['default']['default']['host'] = NULL;
+
+$databases['default']['default']['init_commands']['wait_timeout'] = "SET SESSION wait_timeout = 600";
+$databases['default']['default']['init_commands']['innodb_lock_wait_timeout'] = "SET SESSION innodb_lock_wait_timeout = 25";
+$databases['default']['default']['init_commands']['isolation'] = "SET SESSION tx_isolation='READ-COMMITTED'";
+$databases['default']['default']['mysql_db_type'] = '';
+
 $update_free_access = FALSE;
-$drupal_hash_salt = '';
+$drupal_hash_salt = '4914513f49f0669072c4451a7cfdcf92ca07909d4fbf2a34586782b84131361b';
 
 ini_set('session.gc_probability', 1);
 ini_set('session.gc_divisor', 100);
