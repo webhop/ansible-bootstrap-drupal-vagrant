@@ -163,12 +163,6 @@
   tags: install
   register: drupal_site_install
 
-- name: Enable drupal memcache module
-  command: /usr/local/bin/drush en memcache -y
-  args:
-    chdir: "{{ doc_root }}"
-  tags: install
-
 - name: "Request updatedb-status (may fail)"
   command: "/usr/local/bin/drush -r /var/www updatedb-status -y"
   register: updatedb_status_output
