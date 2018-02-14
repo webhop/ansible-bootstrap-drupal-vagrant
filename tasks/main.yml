@@ -237,7 +237,7 @@
   register: drupal_enabled_features
 
 - name: Reverting Drupal Features
-  command: "/usr/local/bin/drush -r /var/www features-revert-all -y"
+  command: "/usr/local/bin/drush -r /var/www fra -y"
   when: drupal_enabled_features is defined and drupal_enabled_features|success
   tags: update
 
