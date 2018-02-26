@@ -218,7 +218,7 @@
   tags: update
 
 - name: "Updating Drupal DB schema if applicable (may fail)"
-  command: "/usr/local/bin/drush -r /var/www updatedb --clear-cache=0 -y"
+  command: "/usr/local/bin/drush -r /var/www updatedb --cache-clear=0 -y"
   register: updatedb_output
   when: updatedb_status_output.stdout is defined and 'No database updates required' not in updatedb_status_output.stdout
   ignore_errors: yes
