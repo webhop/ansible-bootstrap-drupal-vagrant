@@ -192,7 +192,9 @@
   tags: install
 
 - name: "Request updatedb-status (may fail)"
-  command: "/usr/local/bin/drush -r /var/www updatedb-status -y"
+  command: "/usr/local/bin/drush updatedb-status -y"
+  args:
+    chdir: "{{ doc_root }}"
   register: updatedb_status_output
   ignore_errors: yes
   tags: update
@@ -203,18 +205,24 @@
   tags: update
 
 - name: Rebuild Drupal registry in case drush updatedb-status failed
-  command: "/usr/local/bin/drush -r /var/www registry-rebuild --no-cache-clear"
+  command: "/usr/local/bin/drush registry-rebuild --no-cache-clear"
+  args:
+    chdir: "{{ doc_root }}"
   when: updatedb_status_output|failed
   tags: update
 
 - name: "Request updatedb-status (may NOT fail)"
-  command: "/usr/local/bin/drush -r /var/www updatedb-status -y"
+  command: "/usr/local/bin/drush updatedb-status -y"
+  args:
+    chdir: "{{ doc_root }}"
   register: updatedb_status_output
   when: updatedb_status_output|failed
   tags: update
 
 - name: "Updating Drupal DB schema if applicable (may fail)"
-  command: "/usr/local/bin/drush -r /var/www updatedb --cache-clear=0 -y"
+  command: "/usr/local/bin/drush updatedb --cache-clear=0 -y"
+  args:
+    chdir: "{{ doc_root }}"
   register: updatedb_output
   when: updatedb_status_output.stdout is defined and 'No database updates required' not in updatedb_status_output.stdout
   ignore_errors: yes
@@ -226,19 +234,25 @@
   tags: update
 
 - name: Check if Drupal Features are enabled
-  shell: "/usr/local/bin/drush -r /var/www pm-list | grep '(features)' | grep Enabled"
+  shell: "/usr/local/bin/drush pm-list | grep '(features)' | grep Enabled"
+  args:
+    chdir: "{{ doc_root }}"
   when: drupal_site_install is not defined or drupal_site_install|skipped
   tags: update
   ignore_errors: yes
   register: drupal_enabled_features
 
 - name: Reverting Drupal Features
-  command: "/usr/local/bin/drush -r /var/www fra -y"
+  command: "/usr/local/bin/drush fra -y"
+  args:
+    chdir: "{{ doc_root }}"
   when: drupal_enabled_features is defined and drupal_enabled_features|success
   tags: update
 
 - name: Check if Drupal Set Environment is enabled
-  shell: "/usr/local/bin/drush -r /var/www pm-list | grep '(set_environment)' | grep Enabled"
+  shell: "/usr/local/bin/drush pm-list | grep '(set_environment)' | grep Enabled"
+  args:
+    chdir: "{{ doc_root }}"
   when: drupal_site_install is defined and drupal_site_install|skipped
   tags: update
   ignore_errors: yes
