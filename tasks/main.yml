@@ -185,8 +185,20 @@
   tags: install
   register: drupal_site_install
 
-- name: Enable drupal memcache module
-  command: /usr/local/bin/drush en memcache -y
+- name: Disable drupal memcache module
+  command: /usr/local/bin/drush dis memcache -y
+  args:
+    chdir: "{{ doc_root }}"
+  tags: install
+
+- name: Enable drupal APDQC module
+  command: /usr/local/bin/drush en apdqc -y
+  args:
+    chdir: "{{ doc_root }}"
+  tags: install
+
+- name: Run APDQC operations
+  command: /usr/local/bin/drush apdqc
   args:
     chdir: "{{ doc_root }}"
   tags: install
