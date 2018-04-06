@@ -269,14 +269,13 @@
   command: "/usr/local/bin/drush pm-download stage_file_proxy -y"
   args:
     chdir: "{{ doc_root }}"
-  when: not restore_files_backup
+  when: not restore_files_backup and drupal_version__ | version_compare('8.0', '<') and drupal_version__ | version_compare('7.0', '>=')
 
 - name: Enable the stage_file_proxy module
   command: "/usr/local/bin/drush pm-enable stage_file_proxy -y"
   args:
     chdir: "{{ doc_root }}"
-  when: not restore_files_backup
-
+  when: not restore_files_backup and drupal_version__ | version_compare('8.0', '<') and drupal_version__ | version_compare('7.0', '>=')
 
 # Set site to use stage for assets (instead of downloading locally) for Drupal version v7
 - name: Set the stage URL for the stage_file_proxy module for v7
@@ -297,8 +296,10 @@
   command: "/usr/local/bin/drush pm-download devel -y"
   args:
     chdir: "{{ doc_root }}"
+  when: drupal_version__ | version_compare('8.0', '<') and drupal_version__ | version_compare('7.0', '>=')
 
 - name: Enable the devel module
   command: "/usr/local/bin/drush pm-enable devel -y"
   args:
     chdir: "{{ doc_root }}"
+  when: drupal_version__ | version_compare('8.0', '<') and drupal_version__ | version_compare('7.0', '>=')
