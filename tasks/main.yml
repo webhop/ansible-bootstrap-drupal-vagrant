@@ -277,19 +277,28 @@
     chdir: "{{ doc_root }}"
   when: not restore_files_backup and drupal_version__ | version_compare('8.0', '<') and drupal_version__ | version_compare('7.0', '>=')
 
+- name: Check if Drupal Stage File Proxy is enabled
+  shell: "/usr/local/bin/drush pm-list | grep '(stage_file_proxy)' | grep Enabled"
+  args:
+    chdir: "{{ doc_root }}"
+  when: drupal_site_install is not defined or drupal_site_install|skipped
+  tags: update
+  ignore_errors: yes
+  register: drupal_enabled_stage_file_proxy
+
 # Set site to use stage for assets (instead of downloading locally) for Drupal version v7
 - name: Set the stage URL for the stage_file_proxy module for v7
   command: "/usr/local/bin/drush variable-set stage_file_proxy_origin '{{ drupal_stage_site_url }}'"
   args:
     chdir: "{{ doc_root }}"
-  when: not restore_files_backup and drupal_version__ | version_compare('8.0', '<') and drupal_version__ | version_compare('7.0', '>=')
+  when: not restore_files_backup and drupal_enabled_stage_file_proxy is defined and drupal_enabled_stage_file_proxy|success and drupal_version__ | version_compare('8.0', '<') and drupal_version__ | version_compare('7.0', '>=')
 
 # Set site to use stage for assets (instead of downloading locally) for Drupal version >= v8
 - name: Set the stage URL for the stage_file_proxy module for v8
   command: "drush config-set stage_file_proxy.settings origin '{{ drupal_stage_site_url }}' -y"
   args:
     chdir: "{{ doc_root }}"
-  when: not restore_files_backup and drupal_version__ | version_compare('8.0', '>=')
+  when: not restore_files_backup and drupal_enabled_stage_file_proxy is defined and drupal_enabled_stage_file_proxy|success and drupal_version__ | version_compare('8.0', '>=')
 
 # Download and enable the devel module
 - name: Install the devel drupal module
