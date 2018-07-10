@@ -52,7 +52,7 @@
   register: drupal_db_dump
 
 - name: Retrieve full DB backup from s3
-  s3:
+  aws_s3:
     region: "{{ region }}"
     aws_access_key: "{{ aws_access_key }}"
     aws_secret_key: "{{ aws_secret_key }}"
@@ -139,7 +139,7 @@
   when: restore_db_backup or restore_files_backup
 
 - name: Retrieve files backup from s3
-  s3:
+  aws_s3:
     region: "{{ region }}"
     aws_access_key: "{{ aws_access_key }}"
     aws_secret_key: "{{ aws_secret_key }}"
