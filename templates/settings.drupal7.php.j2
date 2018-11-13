@@ -74,9 +74,12 @@ if (file_exists('./sites/all/modules/contrib/memcache/memcache.inc')) {
   $conf['memcache_servers'] = array('localhost:11211' => 'default');
 }
 
-$conf['environment_indicator_text'] = 'VAGRANT SERVER';
-$conf['environment_indicator_color'] = 'green';
+// Environment indicator options.
+$conf['environment_indicator_overwrite'] = TRUE;
+$conf['environment_indicator_overwritten_name'] = 'Localhost';
+$conf['environment_indicator_overwritten_color'] = '#205f20';
 
+// Set Environment options.
 $conf['set_environment_domain_search']   = '.com';
 $conf['set_environment_domain_replace']  = '.dev';
 
