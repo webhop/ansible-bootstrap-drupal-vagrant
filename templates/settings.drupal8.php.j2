@@ -41,11 +41,11 @@ $settings['hash_salt'] = 'ce65aefe7e22bc7c92398jf32j3ew8a0ab6c349ede1eea011251fe
 $settings['error_level'] = 0;
 
 // Cache settings.
-$settings['cache'] = 1;
-$settings['preprocess_css'] = 1;
+$settings['cache'] = 0;
+$settings['preprocess_css'] = 0;
 $settings['css_gzip_compression'] = 0;
 $settings['advagg_gzip'] = 0;
-$settings['preprocess_js'] = 1;
+$settings['preprocess_js'] = 0;
 $settings['js_gzip_compression'] = 0;
 $settings['cache_lifetime'] = 0;
 $settings['page_cache_maximum_age'] = 86400;
@@ -77,6 +77,10 @@ $settings['beamly_webhop_environment'] = 'development';
 // AWS Credentials (used by s3fs module)
 $settings['awssdk2_use_instance_profile'] = TRUE;
 $settings['awssdk2_default_cache_config'] = '/tmp/aws_credentials';
+
+// Ensure no database config from production persists locally.
+$config['fastly.settings']['api_key'] = '';
+$config['fastly.settings']['service_id'] = '';
 
 if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
   include $app_root . '/' . $site_path . '/settings.local.php';

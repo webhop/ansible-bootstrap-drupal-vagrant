@@ -233,6 +233,17 @@
   when: updatedb_output|failed
   tags: update
 
+- name: Disables the D7 Fastly integration for vagrant
+  command: "/usr/local/bin/drush pm-disable fastly -y"
+  args:
+    chdir: "{{ doc_root }}"
+  when: drupal_version__ | version_compare('8.0', '<') and drupal_version__ | version_compare('7.0', '>=')
+
+- name: Uninstalls the Fastly integration for vagrant
+  command: "/usr/local/bin/drush pm-uninstall fastly -y"
+  args:
+    chdir: "{{ doc_root }}"
+
 - name: Check if Drupal Features are enabled
   shell: "/usr/local/bin/drush pm-list | grep '(features)' | grep Enabled"
   args:
