@@ -83,6 +83,13 @@ $conf['environment_indicator_overwritten_color'] = '#205f20';
 $conf['set_environment_domain_search']   = '.com';
 $conf['set_environment_domain_replace']  = '.dev';
 
+// Ensure no database config from production persists locally.
+$conf['fastly_api_key'] = '';
+$conf['fastly_service_id'] = '';
+// 1 => FASTLY_DEFAULT_CLEAR.
+$conf['fastly_cache_clear'] = 1;
+// 0 => EXPIRE_STATUS_DISABLED.
+$conf['expire_status'] = 0;
 $conf['reverse_proxy'] = FALSE;
 
 if (function_exists('conf_path')) { // allow this file to be sourced regardless of whether drupal is bootstrapped
