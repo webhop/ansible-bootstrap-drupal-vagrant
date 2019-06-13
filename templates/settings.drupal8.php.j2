@@ -82,12 +82,11 @@ $settings['awssdk2_default_cache_config'] = '/tmp/aws_credentials';
 $config['fastly.settings']['api_key'] = '';
 $config['fastly.settings']['service_id'] = '';
 
-if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
-  include $app_root . '/' . $site_path . '/settings.local.php';
+if (file_exists($app_root . '/' . $site_path . '/local_settings.php')) {
+  include $app_root . '/' . $site_path . '/local_settings.php';
 }
 
 // File paths.
 $settings['file_private_path'] = 'sites/default/private';
 $settings['file_public_path'] = 'sites/default/files';
 $settings['file_temporary_path'] = '/tmp';
-
