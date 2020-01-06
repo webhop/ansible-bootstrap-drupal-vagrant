@@ -10,8 +10,7 @@
   pip:
     name: "{{ item }}"
   with_items:
-    - MySQL-python
-    - boto
+    - PyMySQL
     - boto3
     - botocore
 
